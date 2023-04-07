@@ -30,7 +30,12 @@ This will scan the front-end files and CSS/SCSS files in the project directory a
 
 ## Modules and Functions
 
-The project contains the following modules and functions:
+//TODO
+
+## TODO List
+
+Check unused classes
+Allow user to add files and classes to safelist
 
 ## License
 

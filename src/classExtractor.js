@@ -79,6 +79,79 @@ const extractClassesFromTSX = (path) => {
 };
 
 /**
+ * Extracts class names from a front end file.
+ * @param {string} path - The path to the .tsx file.
+ * @returns {Array<{class: string, line: number, path: string}>} - An array of objects containing the class name, line number and file path.
+ */
+const extractClassesFromJS = (path) => {
+  let fileContent = fs.readFileSync(path, "utf8");
+  const classNames = [];
+  const stringRegexp = /class=["']([^"']*)["']/g;
+  const expressionRegexp = /class={`([^`\\]*(?:\\.[^`\\]*)*)`}/g;
+  const newExpressionRegexp =
+    /class={((?:[^"'}]|(?:"(?:\\.|[^"\\])*")|(?:'(?:\\.|[^'\\])*'))+)}/g;
+  let match;
+
+  while ((match = stringRegexp.exec(fileContent))) {
+    const className = match[1].trim();
+    if (className) {
+      const classList = className.split(/\s+/);
+      classList.forEach((cl) => {
+        const trimmed = cl.trim();
+        if (trimmed) {
+          classNames.push({
+            class: trimmed.replace(/^\./, ""),
+            line: getLineNumber(fileContent, match.index),
+            path: getPath(path),
+          });
+        }
+      });
+    }
+  }
+  fileContent = fileContent.replace(stringRegexp, "-");
+
+  while ((match = expressionRegexp.exec(fileContent))) {
+    let expression = match[1].trim();
+
+    if (expression) {
+      const expressionMatches = expression.match(/\${[\s\S]*?}/g) || [];
+      const expressionless = expression.replace(/\${[\s\S]*?}/g, "");
+
+      expressionMatches.forEach((exp) => {
+        const expressionValue = exp.slice(2, -1).trim();
+        const line =
+          getLineNumber(fileContent, match.index) + getLineCount(expression);
+        classNames.push(...interpretExpression(expressionValue, line, path));
+      });
+
+      const classList = expressionless.split(/\s+/);
+      classList.forEach((cl) => {
+        const trimmed = cl.trim();
+        if (trimmed) {
+          classNames.push({
+            class: cl,
+            line:
+              getLineNumber(fileContent, match.index) +
+              getLineCount(expression),
+            path: getPath(path),
+          });
+        }
+      });
+    }
+  }
+  fileContent = fileContent.replace(expressionRegexp, "-");
+
+  while ((match = newExpressionRegexp.exec(fileContent))) {
+    const expression = match[1].trim();
+    const line = getLineNumber(fileContent, match.index);
+    classNames.push(...interpretExpression(expression, line, path));
+  }
+  fileContent = fileContent.replace(newExpressionRegexp, "-");
+
+  return classNames;
+};
+
+/**
  * Interprets the given expression and returns an array of class objects or expression objects,
  * depending on the input.
  * @param {string} expression - The expression to be interpreted.
@@ -195,6 +268,7 @@ function extractClassesFromCss(path) {
 }
 
 module.exports = {
+  extractClassesFromJS,
   extractClassesFromTSX,
   extractClassesFromCss,
 };
