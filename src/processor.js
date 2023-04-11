@@ -56,7 +56,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences) {
   logs.push("LISTA DE EXPRESSOES EM REFERENCIAS DE CLASSES:\n");
   frontEndOccurrences.forEach((frontOccurrence) => {
     if (frontOccurrence.expression) {
-      let text = `Expressao: {'${frontOccurrence.class}'} no arquivo ${frontOccurrence.path}`;
+      let text = `Expressao: {'${frontOccurrence.expression}'} no arquivo ${frontOccurrence.path} na linha ${frontOccurrence.line}`;
       text += "\n";
       if (logs.indexOf(text) === -1) logs.push(text);
     }
@@ -68,7 +68,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences) {
         cssOccurrences[i].class === cssOccurrences[j].class &&
         cssOccurrences[i].path !== cssOccurrences[j].path
       ) {
-        const text = `Duplicidade encontrada: classe '${cssOccurrences[i].class}' presente em '${cssOccurrences[i].path}' e '${cssOccurrences[j].path}'`;
+        const text = `Duplicidade encontrada: classe '${cssOccurrences[i].class}' presente em '${cssOccurrences[i].path}' linha ${cssOccurrences[i].line} e '${cssOccurrences[j].path}' linha ${cssOccurrences[j].line}`;
         if (logs.indexOf(text) === -1) logs.push(text);
       }
     }
