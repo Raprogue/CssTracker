@@ -15,13 +15,20 @@ function findClassReferences(cssOccurrences, frontEndOccurrences) {
   cssOccurrences.forEach((cssOccurrence) => {
     if (!cssOccurrence.tsxPaths) cssOccurrence.tsxPaths = [];
     frontEndOccurrences.forEach((frontOccurrence) => {
+      if (!frontOccurrence.tsxPaths) frontOccurrence.tsxPaths = [];
       if (cssOccurrence.class === frontOccurrence.class) {
         cssOccurrence.tsxPaths.push(frontOccurrence.path);
+        frontOccurrence.cssPaths.push(cssOccurrence.path);
       }
     });
   });
 
   cssOccurrences.forEach((cssOccurrence) => {
+    if (cssOccurrence.tsxPaths.length === 0) {
+      let text = `Nao foi encontrada nenhuma referencia para a classe '${cssOccurrence.class}', confira a lista de expressoes, caso possa haver alguma referencia`;
+      text += "\n";
+      if (logs.indexOf(text) === -1) logs.push(text);
+    }
     const commonPath = getCommonPath(cssOccurrence.tsxPaths);
     if (
       commonPath &&
@@ -32,6 +39,22 @@ function findClassReferences(cssOccurrences, frontEndOccurrences) {
       cssOccurrence.tsxPaths.forEach((tsxPath) => {
         text += "\n" + tsxPath + ", ";
       });
+      text += "\n";
+      if (logs.indexOf(text) === -1) logs.push(text);
+    }
+  });
+
+  frontEndOccurrences.forEach((frontOccurrence) => {
+    if (frontOccurrence.cssPaths.length === 0 && frontOccurrence.class) {
+      let text = `Nao foi encontrada nenhuma definicao para a classe '${frontOccurrence.class}'`;
+      text += "\n";
+      if (logs.indexOf(text) === -1) logs.push(text);
+    }
+  });
+  logs.push("LISTA DE EXPRESSOES EM REFERENCIAS DE CLASSES:\n");
+  frontEndOccurrences.forEach((frontOccurrence) => {
+    if (frontOccurrence.expression) {
+      let text = `Expressao: {'${frontOccurrence.class}'} no arquivo ${frontEndOccurrence.path}`;
       text += "\n";
       if (logs.indexOf(text) === -1) logs.push(text);
     }
