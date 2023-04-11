@@ -21,7 +21,4 @@ function start() {
   const logs = findClassReferences(cssJson, tsxJson);
   fs.writeFileSync("./logs/logs.txt", logs.join("\n"));
 }
-
-module.exports = {
-  start,
-};
+start()

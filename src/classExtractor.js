@@ -2,7 +2,7 @@
  * This module exports a function that extracts class names from css or front end file.
  * @module extractClassesFromTSX
  */
-
+const fs = require("fs");
 const { getPath } = require("./fileScan");
 
 /**

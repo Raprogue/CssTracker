@@ -2,6 +2,8 @@
   A module for process css data about a project
   @module processor
 */
+const path = require("path");
+const { getCommonPath } = require("./fileScan");
 
 /**
  * Finds references to CSS classes in front-end files and provides refactoring suggestions.
@@ -15,7 +17,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences) {
   cssOccurrences.forEach((cssOccurrence) => {
     if (!cssOccurrence.tsxPaths) cssOccurrence.tsxPaths = [];
     frontEndOccurrences.forEach((frontOccurrence) => {
-      if (!frontOccurrence.tsxPaths) frontOccurrence.tsxPaths = [];
+      if (!frontOccurrence.cssPaths) frontOccurrence.cssPaths = [];
       if (cssOccurrence.class === frontOccurrence.class) {
         cssOccurrence.tsxPaths.push(frontOccurrence.path);
         frontOccurrence.cssPaths.push(cssOccurrence.path);
@@ -54,7 +56,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences) {
   logs.push("LISTA DE EXPRESSOES EM REFERENCIAS DE CLASSES:\n");
   frontEndOccurrences.forEach((frontOccurrence) => {
     if (frontOccurrence.expression) {
-      let text = `Expressao: {'${frontOccurrence.class}'} no arquivo ${frontEndOccurrence.path}`;
+      let text = `Expressao: {'${frontOccurrence.class}'} no arquivo ${frontOccurrence.path}`;
       text += "\n";
       if (logs.indexOf(text) === -1) logs.push(text);
     }
