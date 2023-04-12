@@ -19,7 +19,7 @@ function scanFolder(folder, extensions, extractClassesFunc) {
   const files = fs.readdirSync(folder);
 
   files.forEach((file) => {
-    const filePath = path.join(folder, file);
+    const filePath = path.relative(process.cwd(), path.join(folder, file));
     const stats = fs.statSync(filePath);
 
     if (stats.isDirectory()) {
@@ -58,20 +58,15 @@ function getCommonPath(paths) {
     }
   }
 
-  return commonSegments.length > 0 ? commonSegments.join("/") : null;
-}
+  const commonPath =
+    commonSegments.length > 0 ? commonSegments.join("/") : null;
+  const stats = fs.statSync(commonPath);
 
-/**
- * Returns the relative path from the project root to a file path.
- * @param {string} filePath - The file path to get the relative path from.
- * @returns {string} The relative path from the project root to the file path.
- */
-function getPath(filePath) {
-  const projectPath = path.resolve(__dirname);
-  const parsedFilePath = path.parse(filePath);
-  const relativePath = path.relative(projectPath, parsedFilePath.dir);
-
-  return relativePath + "/" + parsedFilePath.name; // src/file
+  if (stats.isFile()) {
+    return commonPath.split("/").slice(0, -1).join("/");
+  } else {
+    return commonPath;
+  }
 }
 
 /**
@@ -80,7 +75,10 @@ function getPath(filePath) {
  */
 async function loadBlackList() {
   try {
-    return JSON.parse(await fs.promises.readFile("./blacklist.json"));
+    const packageJson = await fs.promises.readFile(
+      path.join(process.cwd(), "./package.json")
+    );
+    return JSON.parse(packageJson).cssTracker.blacklist;
   } catch (error) {
     throw error;
   }
@@ -89,6 +87,5 @@ async function loadBlackList() {
 module.exports = {
   scanFolder,
   getCommonPath,
-  getPath,
   loadBlackList,
 };

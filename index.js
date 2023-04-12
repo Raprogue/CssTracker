@@ -9,17 +9,14 @@ const {
 
 async function start() {
   let cssJson = scanFolder(
-    path.dirname(__filename),
+    process.cwd(),
     [".css", ".scss"],
     extractClassesFromCss
   );
-  let tsxJson = scanFolder(
-    path.dirname(__filename),
-    [".tsx"],
-    extractClassesFromTSX
-  );
+  let tsxJson = scanFolder(process.cwd(), [".tsx"], extractClassesFromTSX);
   const blacklist = await loadBlackList();
   const logs = findClassReferences(cssJson, tsxJson, blacklist);
-  fs.writeFileSync("./logs/logs.txt", logs.join("\n"));
+  fs.writeFileSync("./logs.txt", logs.join("\n"));
 }
+
 start();

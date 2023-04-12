@@ -3,7 +3,6 @@
  * @module extractClassesFromTSX
  */
 const fs = require("fs");
-const { getPath } = require("./fileScan");
 
 /**
  * Extracts class names from a .tsx file.
@@ -29,7 +28,7 @@ const extractClassesFromTSX = (path) => {
           classNames.push({
             class: trimmed.replace(/^\./, ""),
             line: getLineNumber(fileContent, match.index),
-            path: getPath(path),
+            path: path,
           });
         }
       });
@@ -60,7 +59,7 @@ const extractClassesFromTSX = (path) => {
             line:
               getLineNumber(fileContent, match.index) +
               getLineCount(expression),
-            path: getPath(path),
+            path: path,
           });
         }
       });
@@ -102,7 +101,7 @@ const extractClassesFromJS = (path) => {
           classNames.push({
             class: trimmed.replace(/^\./, ""),
             line: getLineNumber(fileContent, match.index),
-            path: getPath(path),
+            path: path,
           });
         }
       });
@@ -133,7 +132,7 @@ const extractClassesFromJS = (path) => {
             line:
               getLineNumber(fileContent, match.index) +
               getLineCount(expression),
-            path: getPath(path),
+            path: path,
           });
         }
       });
@@ -202,7 +201,7 @@ const interpretExpression = (expression, line, path) => {
         classNames.push({
           class: trimmed.replace(/^\./, ""),
           line: line,
-          path: getPath(path),
+          path: path,
         });
       }
     });
@@ -212,7 +211,7 @@ const interpretExpression = (expression, line, path) => {
       classNames.push({
         expression: expressionValue,
         line: line + getLineCount(exp),
-        path: getPath(path),
+        path: path,
       });
     });
     return classNames;
@@ -258,7 +257,7 @@ function extractClassesFromCss(path) {
         classes.push({
           class: match.substring(1),
           line: i + 1,
-          path: getPath(path),
+          path: path,
         });
       }
     }

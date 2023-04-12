@@ -16,12 +16,16 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
 
   cssOccurrences.forEach((cssOccurrence) => {
     if (!cssOccurrence.tsxPaths) cssOccurrence.tsxPaths = [];
+    if (
+      checkBlacklistedPath(blacklist, cssOccurrence.path, "css") ||
+      blacklist.cssClasses.indexOf(cssOccurrence.class) > 0
+    )
+      return;
     frontEndOccurrences.forEach((frontOccurrence) => {
       if (!frontOccurrence.cssPaths) frontOccurrence.cssPaths = [];
       if (cssOccurrence.class === frontOccurrence.class) {
         if (
-          blacklist.paths.indexOf(cssOccurrence.path) > 0 ||
-          blacklist.paths.indexOf(frontOccurrence.path) > 0 ||
+          checkBlacklistedPath(blacklist, frontOccurrence.path, "front") ||
           blacklist.cssClasses.indexOf(cssOccurrence.class) > 0
         )
           return;
@@ -33,7 +37,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
 
   cssOccurrences.forEach((cssOccurrence) => {
     if (
-      blacklist.paths.indexOf(cssOccurrence.path) > 0 ||
+      checkBlacklistedPath(blacklist, cssOccurrence.path, "css") ||
       blacklist.cssClasses.indexOf(cssOccurrence.class) > 0
     )
       return;
@@ -47,11 +51,14 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
       commonPath &&
       path.dirname(commonPath) !== path.dirname(cssOccurrence.path)
     ) {
-      let text = `Sugestão: mover a classe '${cssOccurrence.class}' da pasta '${cssOccurrence.path}' para a pasta '${commonPath}'`;
-      text += `\nporque foram encontradas ocorrências em:`;
+      let text = `Sugestão: mover a classe '${cssOccurrence.class}' do arquivo '${cssOccurrence.path}' para a pasta '${commonPath}'`;
+      text += `\nporque foram encontradas ocorrências em:\n`;
+      let arquivos = [];
       cssOccurrence.tsxPaths.forEach((tsxPath) => {
-        text += "\n" + tsxPath + ", ";
+        if (arquivos.indexOf(tsxPath + ",") === -1)
+          arquivos.push(tsxPath + ",");
       });
+      text += arquivos.join("\n");
       text += "\n";
       if (logs.indexOf(text) === -1) logs.push(text);
     }
@@ -59,7 +66,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
 
   frontEndOccurrences.forEach((frontOccurrence) => {
     if (
-      blacklist.paths.indexOf(frontOccurrence.path) > 0 ||
+      checkBlacklistedPath(blacklist, frontOccurrence.path, "front") ||
       blacklist.cssClasses.indexOf(frontOccurrence.class) > 0
     )
       return;
@@ -72,7 +79,8 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
   logs.push("LISTA DE EXPRESSOES EM REFERENCIAS DE CLASSES:\n");
   frontEndOccurrences.forEach((frontOccurrence) => {
     if (frontOccurrence.expression) {
-      if (blacklist.paths.indexOf(frontOccurrence.path) > 0) return;
+      if (checkBlacklistedPath(blacklist, frontOccurrence.path, "front"))
+        return;
       let text = `Expressao: {'${frontOccurrence.expression}'} no arquivo ${frontOccurrence.path} na linha ${frontOccurrence.line}`;
       text += "\n";
       if (logs.indexOf(text) === -1) logs.push(text);
@@ -82,7 +90,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
   const redundanceClasses = [];
   for (let i = 0; i < cssOccurrences.length; i++) {
     if (
-      blacklist.paths.indexOf(cssOccurrences[i].path) > 0 ||
+      checkBlacklistedPath(blacklist, cssOccurrences[i].path, "css") ||
       blacklist.cssClasses.indexOf(cssOccurrences[i].class) > 0
     )
       continue;
@@ -90,7 +98,8 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
     if (redundanceClasses.indexOf(cssOccurrences[i].class) != -1) continue;
 
     for (let j = i + 1; j < cssOccurrences.length; j++) {
-      if (blacklist.paths.indexOf(cssOccurrences[j].path) > 0) continue;
+      if (checkBlacklistedPath(blacklist, cssOccurrences[j].path, "css"))
+        continue;
       if (
         cssOccurrences[i].class === cssOccurrences[j].class &&
         cssOccurrences[i].path !== cssOccurrences[j].path
@@ -106,6 +115,22 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, blacklist) {
   }
 
   return logs;
+}
+
+function checkBlacklistedPath(blacklist, pathToCheck, type) {
+  if (type === "css")
+    return blacklist.cssPaths.some((blackItem) => {
+      return path
+        .relative(process.cwd(), pathToCheck)
+        .startsWith(path.relative(process.cwd(), blackItem));
+    });
+  if (type === "front")
+    return blacklist.frontPaths.some((blackItem) => {
+      return path
+        .relative(process.cwd(), pathToCheck)
+        .startsWith(path.relative(process.cwd(), blackItem));
+    });
+  return false;
 }
 
 module.exports = {
