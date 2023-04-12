@@ -74,8 +74,21 @@ function getPath(filePath) {
   return relativePath + "/" + parsedFilePath.name; // src/file
 }
 
+/**
+ * Load the blacklist of files and classes to exclude on proccessing
+ * @returns {{paths:Array<string>,cssClasses:Array<string>}} An object with an array of paths and css classes to exclude
+ */
+async function loadBlackList() {
+  try {
+    return JSON.parse(await fs.promises.readFile("./blacklist.json"));
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   scanFolder,
   getCommonPath,
   getPath,
+  loadBlackList,
 };
