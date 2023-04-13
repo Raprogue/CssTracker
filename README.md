@@ -6,36 +6,77 @@ This is a project for processing CSS data about a project. It provides suggestio
 
 To use this project, you need to have Node.js installed on your machine. You can download it [here](https://nodejs.org/).
 
-After you have installed Node.js, you can clone this repository using the following command:
+Navigate to the project directory and install the module using the following command:
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
-```
-
-Then, navigate to the project directory and install the dependencies using the following command:
-
-```bash
-npm install
+npm install css-tracker
 ```
 
 ## Usage
 
-To run the project, navigate to the project directory and use the following command:
+Run the command on the project folder
 
 ```bash
-npm start
+npm run css-tracker
 ```
 
+You can modify the functions that will run by using
+
+```bash
+npm run css-tracker --mode dpfel
+```
+
+D - Check if css classes are being used on front files
+P - Check If css classes are in correct paths given their use
+F - Check if used classes have definitions on css files
+E - List expressions on class attributes on front files
+L - Check for duplicate definitions of classes on css files
+
 This will scan the front-end files and CSS/SCSS files in the project directory and generate a log file with refactoring suggestions in the logs folder.
+If no option is passed all functions will be executed
 
-## Modules and Functions
+## Configuration
 
-//TODO
+Default configuration after installation
 
-## TODO List
+```bash
+"cssTracker": {
+    "blacklist": {
+        "cssPaths": [],
+        "moveCssPaths": [
+            "./node_modules",
+            ".public",
+            "./.cache",
+            "./build"
+        ],
+        "frontPaths": [
+            "./node_modules",
+            ".public",
+            "./.cache",
+            "./build"
+        ],
+        "cssClasses": []
+    },
+    "frontFiles": [
+        ".tsx",
+        ".jsx",
+        ".html"
+    ],
+    "cssFiles": [
+        ".css",
+        ".scss"
+    ],
+    "outputLog": "./logs.txt"
+}
+```
 
-Check unused classes
-Allow user to add files and classes to safelist
+blacklist - especifies classes and paths to not look into.
+    cssPaths - Used for not look into that path for css files
+    moveCssPaths - Used in case you want check the classes inside but not considering move them from there
+    frontPaths - Used for not look into that path for front files
+frontFiles - Extensions to look for front files
+cssFiles - Extensions to look for css files
+outputLog - Where the output log will be generated
 
 ## License
 
