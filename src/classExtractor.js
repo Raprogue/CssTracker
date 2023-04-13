@@ -5,6 +5,18 @@
 const fs = require("fs");
 
 /**
+ * Extracts class names from a front-end file
+ * @param {string} path - The path to the .tsx file.
+ * @returns {Array<{class: string, line: number, path: string}>} - An array of objects containing the class name, line number and file path.
+ */
+const extractClassesFromFront = (path) => {
+  if (path.endsWith(".tsx") || path.endsWith(".jsx")) {
+    return extractClassesFromTSX(path);
+  }
+  return extractClassesFromJS(path);
+};
+
+/**
  * Extracts class names from a .tsx file.
  * @param {string} path - The path to the .tsx file.
  * @returns {Array<{class: string, line: number, path: string}>} - An array of objects containing the class name, line number and file path.
@@ -267,7 +279,6 @@ function extractClassesFromCss(path) {
 }
 
 module.exports = {
-  extractClassesFromJS,
-  extractClassesFromTSX,
+  extractClassesFromFront,
   extractClassesFromCss,
 };

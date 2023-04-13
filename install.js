@@ -13,7 +13,7 @@ const projectPackageJson = JSON.parse(
 );
 
 // Define o comando que será executado pelo script track-css
-const trackCssCommand = `node ./node_modules/css-tracker/index.js`;
+const trackCssCommand = "node ./node_modules/css-tracker/index.js --mode";
 
 // Adiciona o script track-css ao package.json do projeto principal
 projectPackageJson.scripts[SCRIPT_NAME] = trackCssCommand;
@@ -24,6 +24,8 @@ if (!projectPackageJson.cssTracker) {
       frontPaths: ["./node_modules", ".public", "./.cache", "./build"],
       cssClasses: [],
     },
+    frontFiles: [".tsx", ".jsx", ".html"],
+    cssFiles: [".css", ".scss"],
   };
 }
 // Escreve o conteúdo atualizado do package.json de volta no disco

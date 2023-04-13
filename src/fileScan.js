@@ -58,8 +58,7 @@ function getCommonPath(paths) {
     }
   }
 
-  const commonPath =
-    commonSegments.length > 0 ? commonSegments.join("/") : null;
+  const commonPath = commonSegments.length > 0 ? commonSegments.join("/") : "/";
   const stats = fs.statSync(commonPath);
 
   if (stats.isFile()) {
@@ -73,12 +72,12 @@ function getCommonPath(paths) {
  * Load the blacklist of files and classes to exclude on proccessing
  * @returns {{paths:Array<string>,cssClasses:Array<string>}} An object with an array of paths and css classes to exclude
  */
-async function loadBlackList() {
+async function loadConfig() {
   try {
     const packageJson = await fs.promises.readFile(
       path.join(process.cwd(), "./package.json")
     );
-    return JSON.parse(packageJson).cssTracker.blacklist;
+    return JSON.parse(packageJson).cssTracker;
   } catch (error) {
     throw error;
   }
@@ -87,5 +86,5 @@ async function loadBlackList() {
 module.exports = {
   scanFolder,
   getCommonPath,
-  loadBlackList,
+  loadConfig,
 };
