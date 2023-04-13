@@ -22,18 +22,21 @@ async function start() {
   console.log("Configuration:");
   console.log(config);
 
+  console.log("Loading Css Files...");
   let cssJson = scanFolder(
     process.cwd(),
     config.cssFiles,
     extractClassesFromCss
   );
-  let tsxJson = scanFolder(
+
+  console.log("Loading Front Files...");
+  let frontJson = scanFolder(
     process.cwd(),
     config.frontFiles,
     extractClassesFromFront
   );
-  const logs = findClassReferences(cssJson, tsxJson, config);
-  fs.writeFileSync("./logs.txt", logs.join("\n"));
+  const logs = findClassReferences(cssJson, frontJson, config);
+  fs.writeFileSync(config.outputLog, logs.join("\n"));
 }
 
 start();

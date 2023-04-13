@@ -21,11 +21,13 @@ if (!projectPackageJson.cssTracker) {
   projectPackageJson.cssTracker = {
     blacklist: {
       cssPaths: [],
+      moveCssPaths: ["./node_modules", ".public", "./.cache", "./build"],
       frontPaths: ["./node_modules", ".public", "./.cache", "./build"],
       cssClasses: [],
     },
     frontFiles: [".tsx", ".jsx", ".html"],
     cssFiles: [".css", ".scss"],
+    outputLog: "./logs.txt",
   };
 }
 // Escreve o conteúdo atualizado do package.json de volta no disco

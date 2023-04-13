@@ -72,6 +72,7 @@ function checkDefinitionPaths(cssOccurrences, blacklist, logs) {
   cssOccurrences.forEach((cssOccurrence) => {
     if (
       checkBlacklistedPath(blacklist, cssOccurrence.path, "cssPaths") ||
+      checkBlacklistedPath(blacklist, cssOccurrence.path, "moveCssPaths") ||
       blacklist.cssClasses.indexOf(cssOccurrence.class) > 0
     )
       return;
@@ -79,11 +80,10 @@ function checkDefinitionPaths(cssOccurrences, blacklist, logs) {
       return;
     }
     const commonPath = getCommonPath(cssOccurrence.tsxPaths);
-    if (
-      commonPath &&
-      path.dirname(commonPath) !== path.dirname(cssOccurrence.path)
-    ) {
-      let text = `Move class '${cssOccurrence.class}' from '${cssOccurrence.path}' to '${commonPath}'`;
+    if (commonPath && commonPath !== path.dirname(cssOccurrence.path)) {
+      let text = `Move class '${cssOccurrence.class}' from '${path.dirname(
+        cssOccurrence.path
+      )}' to '${commonPath}'`;
       text += `\nFound ocurrences of use:\n`;
       let files = [];
       cssOccurrence.tsxPaths.forEach((tsxPath) => {
@@ -230,7 +230,7 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, config) {
 function checkBlacklistedPath(blacklist, pathToCheck, type) {
   if (!blacklist[type]) return false;
 
-  return blacklist.cssPaths.some((blackItem) => {
+  return blacklist[type].some((blackItem) => {
     return path
       .relative(process.cwd(), pathToCheck)
       .startsWith(path.relative(process.cwd(), blackItem));
