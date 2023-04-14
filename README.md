@@ -78,6 +78,10 @@ frontFiles - Extensions to look for front files
 cssFiles - Extensions to look for css files
 outputLog - Where the output log will be generated
 
+## GitHub
+
+[Github Link](https://github.com/Raprogue/CssTracker)
+
 ## License
 
 This project is licensed under the MIT License.
