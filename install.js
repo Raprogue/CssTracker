@@ -24,7 +24,7 @@ if (!projectPackageJson.cssTracker.blacklist) {
   projectPackageJson.cssTracker.blacklist = {};
 }
 if (!projectPackageJson.cssTracker.blacklist.cssPaths) {
-  projectPackageJson.cssTracker.blacklistcssPaths = [];
+  projectPackageJson.cssTracker.blacklist.cssPaths = [];
 }
 if (!projectPackageJson.cssTracker.blacklist.notUsedCss) {
   projectPackageJson.cssTracker.blacklist.notUsedCss = [
@@ -36,7 +36,7 @@ if (!projectPackageJson.cssTracker.blacklist.notUsedCss) {
   ];
 }
 if (!projectPackageJson.cssTracker.blacklist.moveCssPaths) {
-  projectPackageJson.cssTracker.blacklistmoveCssPaths = [
+  projectPackageJson.cssTracker.blacklist.moveCssPaths = [
     "./node_modules",
     "./public",
     "./.cache",
@@ -72,7 +72,7 @@ if (!projectPackageJson.cssTracker.cssFiles) {
   projectPackageJson.cssTracker.cssFiles = [".css", ".scss", ".vue"];
 }
 if (!projectPackageJson.cssTracker.outputLog) {
-  projectPackageJson.cssTracker.outputLog = "./logs.txt";
+  projectPackageJson.cssTracker.outputLog = "./output-log.json";
 }
 
 // Escreve o conteúdo atualizado do package.json de volta no disco

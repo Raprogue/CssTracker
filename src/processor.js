@@ -40,13 +40,10 @@ function preProccessing(cssOccurrences, frontEndOccurrences, blacklist) {
  * Checks if classes defined are being used
  * @param {Array<{class: string, line: number, path: string}>} cssOccurrences - An array of objects representing the occurrences of CSS classes in CSS/SCSS files. Each object should have a 'class' property representing the class name, a 'line' property representing the line number, and a 'path' property representing the file path.
  * @param {Object} blacklist - An object with blacklist of paths and classes
- * @param {Array<string>} logs - An array of logs to add rows
  * @returns {Array<string>} - An array of log messages with refactoring suggestions. The messages include suggestions to move the CSS classes to a common directory if they are used in multiple files, and warnings for duplicate class definitions.
  */
-function checkDeclarations(cssOccurrences, blacklist, logs) {
-  logs.push(
-    "***For not found classes check expression list, maybe they are being calculated***"
-  );
+function checkDeclarations(cssOccurrences, blacklist) {
+  let logs = [];
   cssOccurrences.forEach((cssOccurrence) => {
     if (
       checkBlacklistedPath(blacklist, cssOccurrence.path, "cssPaths") ||
@@ -55,8 +52,33 @@ function checkDeclarations(cssOccurrences, blacklist, logs) {
     )
       return;
     if (cssOccurrence.tsxPaths.length === 0) {
-      let text = `Not used class: '${cssOccurrence.class}' from ${cssOccurrence.path} line ${cssOccurrence.line}`;
-      if (logs.indexOf(text) === -1) logs.push(text);
+      let foundLogIndex = logs.findIndex(
+        (log) => log.class === cssOccurrence.class
+      );
+
+      if (foundLogIndex === -1) {
+        logs.push({
+          class: cssOccurrence.class,
+          paths: [{ path: cssOccurrence.path, lines: [cssOccurrence.line] }],
+        });
+      } else {
+        let log = logs[foundLogIndex];
+        let foundPathIndex = log.paths.findIndex(
+          (path) => path.path === cssOccurrence.path
+        );
+
+        if (foundPathIndex === -1) {
+          log.paths.push({
+            path: cssOccurrence.path,
+            lines: [cssOccurrence.line],
+          });
+        } else {
+          let path = log.paths[foundPathIndex];
+          if (path.lines.indexOf(cssOccurrence.line) === -1) {
+            path.lines.push(cssOccurrence.line);
+          }
+        }
+      }
     }
   });
   return logs;
@@ -66,10 +88,10 @@ function checkDeclarations(cssOccurrences, blacklist, logs) {
  * Check if classes are defined on correct places
  * @param {Array<{class: string, line: number, path: string}>} cssOccurrences - An array of objects representing the occurrences of CSS classes in CSS/SCSS files. Each object should have a 'class' property representing the class name, a 'line' property representing the line number, and a 'path' property representing the file path.
  * @param {Object} blacklist - An object with blacklist of paths and classes
- * @param {Array<string>} logs - An array of logs to add rows
  * @returns {Array<string>} - An array of log messages with refactoring suggestions. The messages include suggestions to move the CSS classes to a common directory if they are used in multiple files, and warnings for duplicate class definitions.
  */
-function checkDefinitionPaths(cssOccurrences, blacklist, logs) {
+function checkDefinitionPaths(cssOccurrences, blacklist) {
+  let logs = [];
   cssOccurrences.forEach((cssOccurrence) => {
     if (
       checkBlacklistedPath(blacklist, cssOccurrence.path, "cssPaths") ||
@@ -82,17 +104,12 @@ function checkDefinitionPaths(cssOccurrences, blacklist, logs) {
     }
     const commonPath = getCommonPath(cssOccurrence.tsxPaths);
     if (commonPath && commonPath !== path.dirname(cssOccurrence.path)) {
-      let text = `Move class '${cssOccurrence.class}' from '${path.dirname(
-        cssOccurrence.path
-      )}' to '${commonPath}'`;
-      text += `\nFound ocurrences of use:\n`;
-      let files = [];
-      cssOccurrence.tsxPaths.forEach((tsxPath) => {
-        if (files.indexOf(tsxPath + ",") === -1) files.push(tsxPath + ",");
+      logs.push({
+        class: cssOccurrence.class,
+        moveFrom: path.dirname(cssOccurrence.path),
+        moveTo: commonPath,
+        occurrences: cssOccurrence.tsxPaths,
       });
-      text += files.join("\n");
-      text += "\n";
-      if (logs.indexOf(text) === -1) logs.push(text);
     }
   });
   return logs;
@@ -102,10 +119,10 @@ function checkDefinitionPaths(cssOccurrences, blacklist, logs) {
  * Checks if used classes have definitions
  * @param {Array<{class: string, line: number, path: string}>} frontEndOccurrences - An array of objects representing the occurrences of CSS classes in front-end files. Each object should have a 'class' property representing the class name, a 'line' property representing the line number, and a 'path' property representing the file path.
  * @param {Object} blacklist - An object with blacklist of paths and classes
- * @param {Array<string>} logs - An array of logs to add rows
  * @returns {Array<string>} - An array of log messages with refactoring suggestions. The messages include suggestions to move the CSS classes to a common directory if they are used in multiple files, and warnings for duplicate class definitions.
  */
-function checkDefinitions(frontEndOccurrences, blacklist, logs) {
+function checkDefinitions(frontEndOccurrences, blacklist) {
+  let logs = [];
   frontEndOccurrences.forEach((frontOccurrence) => {
     if (
       checkBlacklistedPath(blacklist, frontOccurrence.path, "frontPaths") ||
@@ -113,9 +130,35 @@ function checkDefinitions(frontEndOccurrences, blacklist, logs) {
     )
       return;
     if (frontOccurrence.cssPaths.length === 0 && frontOccurrence.class) {
-      let text = `Definition not found for class: '${frontOccurrence.class}' from ${frontOccurrence.path} line ${frontOccurrence.line}`;
-      text += "\n";
-      if (logs.indexOf(text) === -1) logs.push(text);
+      let foundLogIndex = logs.findIndex(
+        (log) => log.class === frontOccurrence.class
+      );
+
+      if (foundLogIndex === -1) {
+        logs.push({
+          class: frontOccurrence.class,
+          paths: [
+            { path: frontOccurrence.path, lines: [frontOccurrence.line] },
+          ],
+        });
+      } else {
+        let log = logs[foundLogIndex];
+        let foundPathIndex = log.paths.findIndex(
+          (path) => path.path === frontOccurrence.path
+        );
+
+        if (foundPathIndex === -1) {
+          log.paths.push({
+            path: frontOccurrence.path,
+            lines: [frontOccurrence.line],
+          });
+        } else {
+          let path = log.paths[foundPathIndex];
+          if (path.lines.indexOf(frontOccurrence.line) === -1) {
+            path.lines.push(frontOccurrence.line);
+          }
+        }
+      }
     }
   });
   return logs;
@@ -125,18 +168,43 @@ function checkDefinitions(frontEndOccurrences, blacklist, logs) {
  * List expressions calculating classes on front files
  * @param {Array<{class: string, line: number, path: string}>} frontEndOccurrences - An array of objects representing the occurrences of CSS classes in front-end files. Each object should have a 'class' property representing the class name, a 'line' property representing the line number, and a 'path' property representing the file path.
  * @param {Object} blacklist - An object with blacklist of paths and classes
- * @param {Array<string>} logs - An array of logs to add rows
  * @returns {Array<string>} - An array of log messages with refactoring suggestions. The messages include suggestions to move the CSS classes to a common directory if they are used in multiple files, and warnings for duplicate class definitions.
  */
-function listExpressions(frontEndOccurrences, blacklist, logs) {
-  logs.push("****EXPRESSION LIST:****\n");
+function listExpressions(frontEndOccurrences, blacklist) {
+  let logs = [];
   frontEndOccurrences.forEach((frontOccurrence) => {
     if (frontOccurrence.expression) {
       if (checkBlacklistedPath(blacklist, frontOccurrence.path, "frontPaths"))
         return;
-      let text = `Expression: {'${frontOccurrence.expression}'} on ${frontOccurrence.path} line ${frontOccurrence.line}`;
-      text += "\n";
-      if (logs.indexOf(text) === -1) logs.push(text);
+      let foundLogIndex = logs.findIndex(
+        (log) => log.expression === frontOccurrence.expression
+      );
+
+      if (foundLogIndex === -1) {
+        logs.push({
+          expression: frontOccurrence.expression,
+          paths: [
+            { path: frontOccurrence.path, lines: [frontOccurrence.line] },
+          ],
+        });
+      } else {
+        let log = logs[foundLogIndex];
+        let foundPathIndex = log.paths.findIndex(
+          (path) => path.path === frontOccurrence.path
+        );
+
+        if (foundPathIndex === -1) {
+          log.paths.push({
+            path: frontOccurrence.path,
+            lines: [frontOccurrence.line],
+          });
+        } else {
+          let path = log.paths[foundPathIndex];
+          if (path.lines.indexOf(frontOccurrence.line) === -1) {
+            path.lines.push(frontOccurrence.line);
+          }
+        }
+      }
     }
   });
   return logs;
@@ -146,10 +214,10 @@ function listExpressions(frontEndOccurrences, blacklist, logs) {
  * Finds duplicate definitions for classes
  * @param {Array<{class: string, line: number, path: string}>} cssOccurrences - An array of objects representing the occurrences of CSS classes in CSS/SCSS files. Each object should have a 'class' property representing the class name, a 'line' property representing the line number, and a 'path' property representing the file path.
  * @param {Object} blacklist - An object with blacklist of paths and classes
- * @param {Array<string>} logs - An array of logs to add rows
  * @returns {Array<string>} - An array of log messages with refactoring suggestions. The messages include suggestions to move the CSS classes to a common directory if they are used in multiple files, and warnings for duplicate class definitions.
  */
-function duplicateDefinitions(cssOccurrences, blacklist, logs) {
+function duplicateDefinitions(cssOccurrences, blacklist) {
+  let logs = [];
   const redundanceClasses = [];
   for (let i = 0; i < cssOccurrences.length; i++) {
     if (
@@ -167,18 +235,74 @@ function duplicateDefinitions(cssOccurrences, blacklist, logs) {
         checkBlacklistedPath(blacklist, cssOccurrences[i].path, "duplicateCss")
       )
         continue;
-      if (
-        cssOccurrences[i].class === cssOccurrences[j].class &&
-        cssOccurrences[i].path !== cssOccurrences[j].path
-      ) {
-        if (!redundance)
-          redundance = `Duplicated definition of class: '${cssOccurrences[i].class}' found on\n'${cssOccurrences[i].path}' line ${cssOccurrences[i].line}`;
-        redundance += `\'${cssOccurrences[j].path}' line ${cssOccurrences[j].line}`;
+      if (cssOccurrences[i].class === cssOccurrences[j].class) {
+        if (!redundance) {
+          let foundLogIndex = logs.findIndex(
+            (log) => log.class === cssOccurrences[i].class
+          );
+
+          if (foundLogIndex === -1) {
+            if (cssOccurrences[i].path === cssOccurrences[j].path)
+              logs.push({
+                class: cssOccurrences[i].class,
+                paths: [
+                  {
+                    path: cssOccurrences[i].path,
+                    lines: [cssOccurrences[i].line, cssOccurrences[j].line],
+                  },
+                ],
+              });
+            else
+              logs.push({
+                class: cssOccurrences[i].class,
+                paths: [
+                  {
+                    path: cssOccurrences[i].path,
+                    lines: [cssOccurrences[i].line],
+                  },
+                  {
+                    path: cssOccurrences[j].path,
+                    lines: [cssOccurrences[j].line],
+                  },
+                ],
+              });
+          } else {
+            let log = logs[foundLogIndex];
+            let foundPathIndex = log.paths.findIndex(
+              (path) => path.path === cssOccurrences[i].path
+            );
+
+            if (foundPathIndex === -1) {
+              log.paths.push({
+                path: cssOccurrences[i].path,
+                lines: [cssOccurrences[i].line],
+              });
+            } else {
+              let path = log.paths[foundPathIndex];
+              if (path.lines.indexOf(cssOccurrences[i].line) === -1) {
+                path.lines.push(cssOccurrences[i].line);
+              }
+            }
+
+            foundPathIndex = log.paths.findIndex(
+              (path) => path.path === cssOccurrences[j].path
+            );
+
+            if (foundPathIndex === -1) {
+              log.paths.push({
+                path: cssOccurrences[j].path,
+                lines: [cssOccurrences[j].line],
+              });
+            } else {
+              let path = log.paths[foundPathIndex];
+              if (path.lines.indexOf(cssOccurrences[j].line) === -1) {
+                path.lines.push(cssOccurrences[j].line);
+              }
+            }
+          }
+        }
       }
     }
-    redundance += "\n";
-    redundanceClasses.push(cssOccurrences[i].class);
-    if (logs.indexOf(redundance) === -1) logs.push(redundance);
   }
 
   return logs;
@@ -192,7 +316,7 @@ function duplicateDefinitions(cssOccurrences, blacklist, logs) {
  * @returns {Array<string>} - An array of log messages with refactoring suggestions. The messages include suggestions to move the CSS classes to a common directory if they are used in multiple files, and warnings for duplicate class definitions.
  */
 function findClassReferences(cssOccurrences, frontEndOccurrences, config) {
-  let logs = [];
+  let logs = {};
   console.log("Pre proccessing...");
   const dataProcessed = preProccessing(
     cssOccurrences,
@@ -204,23 +328,26 @@ function findClassReferences(cssOccurrences, frontEndOccurrences, config) {
 
   if (config.checkDeclarations !== false) {
     console.log("Checking Declarations...");
-    logs = checkDeclarations(cssOccurrences, config.blacklist, logs);
+    logs.notUsedClasses = checkDeclarations(cssOccurrences, config.blacklist);
   }
   if (config.checkDefinitionPaths !== false) {
     console.log("Checking Paths...");
-    logs = checkDefinitionPaths(cssOccurrences, config.blacklist, logs);
+    logs.moveClass = checkDefinitionPaths(cssOccurrences, config.blacklist);
   }
   if (config.checkDefinitions !== false) {
     console.log("Checking Definitions...");
-    logs = checkDefinitions(frontEndOccurrences, config.blacklist, logs);
+    logs.noDefinitions = checkDefinitions(
+      frontEndOccurrences,
+      config.blacklist
+    );
   }
   if (config.listExpressions !== false) {
     console.log("Listing Expressions...");
-    logs = listExpressions(frontEndOccurrences, config.blacklist, logs);
+    logs.expressions = listExpressions(frontEndOccurrences, config.blacklist);
   }
   if (config.duplicateDefinitions !== false) {
     console.log("Checking Duplicates...");
-    logs = duplicateDefinitions(cssOccurrences, config.blacklist, logs);
+    logs.duplicateDefs = duplicateDefinitions(cssOccurrences, config.blacklist);
   }
   return logs;
 }
