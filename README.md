@@ -17,20 +17,22 @@ npm install css-tracker
 Run the command on the project folder
 
 ```bash
-npm run css-tracker
+npm run track-css
 ```
 
 You can modify the functions that will run by using
 
 ```bash
-npm run css-tracker --mode dpfel
+npm run track-css --mode dpfel
 ```
 
-D - Check if css classes are being used on front files
-P - Check If css classes are in correct paths given their use
-F - Check if used classes have definitions on css files
-E - List expressions on class attributes on front files
-L - Check for duplicate definitions of classes on css files
+<ul>
+    <li>D - Check if css classes are being used on front files</li>
+    <li>P - Check If css classes are in correct paths given their use</li>
+    <li>F - Check if used classes have definitions on css files</li>
+    <li>E - List expressions on class attributes on front files</li>
+    <li>L - Check for duplicate definitions of classes on css files</li>
+</ul>
 
 This will scan the front-end files and CSS/SCSS files in the project directory and generate a log file with refactoring suggestions in the logs folder.
 If no option is passed all functions will be executed
@@ -69,14 +71,17 @@ Default configuration after installation
     "outputLog": "./logs.txt"
 }
 ```
-
-blacklist - especifies classes and paths to not look into.
-    cssPaths - Used for not look into that path for css files
-    moveCssPaths - Used in case you want check the classes inside but not considering move them from there
-    frontPaths - Used for not look into that path for front files
-frontFiles - Extensions to look for front files
-cssFiles - Extensions to look for css files
-outputLog - Where the output log will be generated
+<ul>
+    <li>blacklist - especifies classes and paths to not look into.</li>
+    <ul>
+        <li>cssPaths - Used for not look into that path for css files</li>
+        <li>moveCssPaths - Used in case you want check the classes inside but not considering move them from there</li>
+        <li>frontPaths - Used for not look into that path for front files</li>
+    <ul>
+    <li>frontFiles - Extensions to look for front files</li>
+    <li>cssFiles - Extensions to look for css files</li>
+    <li>outputLog - Where the output log will be generated</li>
+</ul>
 
 ## GitHub
 
