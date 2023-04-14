@@ -32,6 +32,7 @@ if (!projectPackageJson.cssTracker.blacklist.notUsedCss) {
     ".public",
     "./.cache",
     "./build",
+    "./dist",
   ];
 }
 if (!projectPackageJson.cssTracker.blacklist.moveCssPaths) {
@@ -40,6 +41,7 @@ if (!projectPackageJson.cssTracker.blacklist.moveCssPaths) {
     ".public",
     "./.cache",
     "./build",
+    "./dist",
   ];
 }
 if (!projectPackageJson.cssTracker.blacklist.frontPaths) {
@@ -48,6 +50,7 @@ if (!projectPackageJson.cssTracker.blacklist.frontPaths) {
     ".public",
     "./.cache",
     "./build",
+    "./dist",
   ];
 }
 if (!projectPackageJson.cssTracker.blacklist.cssClasses) {
