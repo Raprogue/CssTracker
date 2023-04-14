@@ -53,6 +53,15 @@ if (!projectPackageJson.cssTracker.blacklist.frontPaths) {
     "./dist",
   ];
 }
+if (!projectPackageJson.cssTracker.blacklist.duplicateCss) {
+  projectPackageJson.cssTracker.blacklist.duplicateCss = [
+    "./node_modules",
+    ".public",
+    "./.cache",
+    "./build",
+    "./dist",
+  ];
+}
 if (!projectPackageJson.cssTracker.blacklist.cssClasses) {
   projectPackageJson.cssTracker.blacklist.cssClasses = [];
 }

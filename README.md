@@ -83,6 +83,7 @@ Default configuration after installation
     <ul>
         <li>cssPaths - Used for not look into that path for css files</li>
         <li>notUsedCss - Used in case you want check the classes inside but not check if you are not using them</li>
+        <li>duplicateCss - Used in case you want check the classes inside but not check if they are duplicated here</li>
         <li>moveCssPaths - Used in case you want check the classes inside but not considering move them from there</li>
         <li>frontPaths - Used for not look into that path for front files</li>
     </ul>

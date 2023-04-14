@@ -154,6 +154,7 @@ function duplicateDefinitions(cssOccurrences, blacklist, logs) {
   for (let i = 0; i < cssOccurrences.length; i++) {
     if (
       checkBlacklistedPath(blacklist, cssOccurrences[i].path, "cssPaths") ||
+      checkBlacklistedPath(blacklist, cssOccurrences[i].path, "duplicateCss") ||
       blacklist.cssClasses.indexOf(cssOccurrences[i].class) > 0
     )
       continue;
@@ -161,7 +162,10 @@ function duplicateDefinitions(cssOccurrences, blacklist, logs) {
     if (redundanceClasses.indexOf(cssOccurrences[i].class) != -1) continue;
 
     for (let j = i + 1; j < cssOccurrences.length; j++) {
-      if (checkBlacklistedPath(blacklist, cssOccurrences[j].path, "cssPaths"))
+      if (
+        checkBlacklistedPath(blacklist, cssOccurrences[j].path, "cssPaths") ||
+        checkBlacklistedPath(blacklist, cssOccurrences[i].path, "duplicateCss")
+      )
         continue;
       if (
         cssOccurrences[i].class === cssOccurrences[j].class &&
