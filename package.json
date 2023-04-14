@@ -1,14 +1,14 @@
 {
   "name": "css-tracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "This module tracks css classes and prints a log with many actions to improve the organization of them on your project",
   "main": "index.js",
   "scripts": {
     "postinstall": "node ./install.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Guilherme Alves Lopes (Raprogue)",
+  "license": "MIT",
   "dependencies": {
     "@types/node": "^18.15.11",
     "fs": "^0.0.1-security",
