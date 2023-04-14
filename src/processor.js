@@ -50,6 +50,7 @@ function checkDeclarations(cssOccurrences, blacklist, logs) {
   cssOccurrences.forEach((cssOccurrence) => {
     if (
       checkBlacklistedPath(blacklist, cssOccurrence.path, "cssPaths") ||
+      checkBlacklistedPath(blacklist, cssOccurrence.path, "notUsedCss") ||
       blacklist.cssClasses.indexOf(cssOccurrence.class) > 0
     )
       return;

@@ -45,6 +45,12 @@ Default configuration after installation
 "cssTracker": {
     "blacklist": {
         "cssPaths": [],
+        "notUsedCss": [
+            "./node_modules",
+            ".public",
+            "./.cache",
+            "./build"
+        ],
         "moveCssPaths": [
             "./node_modules",
             ".public",
@@ -71,10 +77,12 @@ Default configuration after installation
     "outputLog": "./logs.txt"
 }
 ```
+
 <ul>
     <li>blacklist - especifies classes and paths to not look into.</li>
     <ul>
         <li>cssPaths - Used for not look into that path for css files</li>
+        <li>notUsedCss - Used in case you want check the classes inside but not check if you are not using them</li>
         <li>moveCssPaths - Used in case you want check the classes inside but not considering move them from there</li>
         <li>frontPaths - Used for not look into that path for front files</li>
     </ul>

@@ -21,6 +21,7 @@ if (!projectPackageJson.cssTracker) {
   projectPackageJson.cssTracker = {
     blacklist: {
       cssPaths: [],
+      notUsedCss: ["./node_modules", ".public", "./.cache", "./build"],
       moveCssPaths: ["./node_modules", ".public", "./.cache", "./build"],
       frontPaths: ["./node_modules", ".public", "./.cache", "./build"],
       cssClasses: [],
