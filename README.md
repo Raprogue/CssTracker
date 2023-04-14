@@ -77,7 +77,7 @@ Default configuration after installation
         <li>cssPaths - Used for not look into that path for css files</li>
         <li>moveCssPaths - Used in case you want check the classes inside but not considering move them from there</li>
         <li>frontPaths - Used for not look into that path for front files</li>
-    <ul>
+    </ul>
     <li>frontFiles - Extensions to look for front files</li>
     <li>cssFiles - Extensions to look for css files</li>
     <li>outputLog - Where the output log will be generated</li>
