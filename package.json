@@ -1,6 +1,6 @@
 {
   "name": "css-tracker",
-  "version": "1.0.0",
+  "version": "1.0.0a",
   "description": "This module tracks css classes and prints a log with many actions to improve the organization of them on your project",
   "main": "index.js",
   "scripts": {
