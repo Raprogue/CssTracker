@@ -29,7 +29,7 @@ if (!projectPackageJson.cssTracker.blacklist.cssPaths) {
 if (!projectPackageJson.cssTracker.blacklist.notUsedCss) {
   projectPackageJson.cssTracker.blacklist.notUsedCss = [
     "./node_modules",
-    ".public",
+    "./public",
     "./.cache",
     "./build",
     "./dist",
@@ -38,7 +38,7 @@ if (!projectPackageJson.cssTracker.blacklist.notUsedCss) {
 if (!projectPackageJson.cssTracker.blacklist.moveCssPaths) {
   projectPackageJson.cssTracker.blacklistmoveCssPaths = [
     "./node_modules",
-    ".public",
+    "./public",
     "./.cache",
     "./build",
     "./dist",
@@ -47,7 +47,7 @@ if (!projectPackageJson.cssTracker.blacklist.moveCssPaths) {
 if (!projectPackageJson.cssTracker.blacklist.frontPaths) {
   projectPackageJson.cssTracker.blacklist.frontPaths = [
     "./node_modules",
-    ".public",
+    "./public",
     "./.cache",
     "./build",
     "./dist",
@@ -56,7 +56,7 @@ if (!projectPackageJson.cssTracker.blacklist.frontPaths) {
 if (!projectPackageJson.cssTracker.blacklist.duplicateCss) {
   projectPackageJson.cssTracker.blacklist.duplicateCss = [
     "./node_modules",
-    ".public",
+    "./public",
     "./.cache",
     "./build",
     "./dist",
@@ -66,10 +66,10 @@ if (!projectPackageJson.cssTracker.blacklist.cssClasses) {
   projectPackageJson.cssTracker.blacklist.cssClasses = [];
 }
 if (!projectPackageJson.cssTracker.frontFiles) {
-  projectPackageJson.cssTracker.frontFiles = [".tsx", ".jsx", ".html"];
+  projectPackageJson.cssTracker.frontFiles = [".tsx", ".jsx", ".html", ".vue"];
 }
 if (!projectPackageJson.cssTracker.cssFiles) {
-  projectPackageJson.cssTracker.cssFiles = [".css", ".scss"];
+  projectPackageJson.cssTracker.cssFiles = [".css", ".scss", ".vue"];
 }
 if (!projectPackageJson.cssTracker.outputLog) {
   projectPackageJson.cssTracker.outputLog = "./logs.txt";

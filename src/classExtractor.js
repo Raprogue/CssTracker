@@ -119,7 +119,7 @@ const extractClassesFromJS = (path) => {
       });
     }
   }
-  fileContent = fileContent.replace(stringRegexp, "-");
+  fileContent = fileContent.replace(stringRegexp, "");
 
   while ((match = expressionRegexp.exec(fileContent))) {
     let expression = match[1].trim();
@@ -150,7 +150,7 @@ const extractClassesFromJS = (path) => {
       });
     }
   }
-  fileContent = fileContent.replace(expressionRegexp, "-");
+  fileContent = fileContent.replace(expressionRegexp, "");
 
   while ((match = newExpressionRegexp.exec(fileContent))) {
     const expression = match[1].trim();
@@ -171,63 +171,38 @@ const extractClassesFromJS = (path) => {
  * @returns {Array<{class: string, line: number, path: string} | {expression: string, line: number, path: string}>} An array of class or expression objects or expression objects, depending on the input.
  */
 const interpretExpression = (expression, line, path) => {
-  if (expression) {
-    // Remover todos os operadores ternários e substituí-los pelos resultados correspondentes
-    const ternaryRemoved = expression.replace(
-      /([^\s]+)\s\?\s([^:]+)\s:\s([^\s]+)/g,
-      (match, p1, p2, p3) => {
-        if (!/[\"']/.test(p2)) {
-          p2 = "${" + p2 + "}";
+  let result = [];
+  let i = 0;
+  while (i < expression.length) {
+    let currentChar = expression[i];
+    if (currentChar === '"' || currentChar === "'" || currentChar === "`") {
+      let closingQuoteIndex = expression.indexOf(currentChar, i + 1);
+      if (closingQuoteIndex === -1) {
+        throw new Error(`Unclosed quote at line ${line}`);
+      }
+      let stringLiteral = expression.slice(i, closingQuoteIndex + 1);
+      let words = stringLiteral.slice(1, -1).split(" ");
+      for (let word of words) {
+        if (word.length > 0) {
+          result.push({ class: word, line: line, path: path });
         }
-        if (!/[\"']/.test(p3)) {
-          p3 = "${" + p3 + "}";
-        }
-        return `${p2} ${p3}`;
       }
-    );
-
-    // Separar os valores separados por "+" e adicioná-los ao array de classes
-    const list = [];
-    ternaryRemoved.split("+").forEach((item) => {
-      item = item.trim();
-      if (!/[\"']/.test(item)) {
-        item = "${" + item + "}";
-      } else {
-        item = item.replace(/['"]/g, "");
+      i = closingQuoteIndex + 1;
+    } else {
+      let j = i + 1;
+      while (j < expression.length && !`"'`.includes(expression[j])) {
+        j++;
       }
-      list.push(item);
-    });
-
-    // Unir os valores do array de classes com um espaço entre eles
-    const newString = list.join(" ");
-
-    const expressionMatches = newString.match(/\${[\s\S]*?}/g) || [];
-    const expressionless = newString.replace(/\${[\s\S]*?}/g, "");
-
-    const classNames = [];
-
-    const classList = expressionless.split(/\s+/);
-    classList.forEach((cl) => {
-      const trimmed = cl.trim();
-      if (trimmed) {
-        classNames.push({
-          class: trimmed.replace(/^\./, ""),
-          line: line,
-          path: path,
-        });
-      }
-    });
-
-    expressionMatches.forEach((exp) => {
-      const expressionValue = exp.slice(2, -1).trim();
-      classNames.push({
-        expression: expressionValue,
-        line: line + getLineCount(exp),
+      let nonStringLiteral = expression.slice(i, j);
+      result.push({
+        expression: nonStringLiteral.replace(/\s+/g, " "),
+        line: line,
         path: path,
       });
-    });
-    return classNames;
+      i = j;
+    }
   }
+  return result;
 };
 
 /**
