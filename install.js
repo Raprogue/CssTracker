@@ -18,19 +18,51 @@ const trackCssCommand = "node ./node_modules/css-tracker/index.js --mode";
 // Adiciona o script track-css ao package.json do projeto principal
 projectPackageJson.scripts[SCRIPT_NAME] = trackCssCommand;
 if (!projectPackageJson.cssTracker) {
-  projectPackageJson.cssTracker = {
-    blacklist: {
-      cssPaths: [],
-      notUsedCss: ["./node_modules", ".public", "./.cache", "./build"],
-      moveCssPaths: ["./node_modules", ".public", "./.cache", "./build"],
-      frontPaths: ["./node_modules", ".public", "./.cache", "./build"],
-      cssClasses: [],
-    },
-    frontFiles: [".tsx", ".jsx", ".html"],
-    cssFiles: [".css", ".scss"],
-    outputLog: "./logs.txt",
-  };
+  projectPackageJson.cssTracker = {};
 }
+if (!projectPackageJson.cssTracker.blacklist) {
+  projectPackageJson.cssTracker.blacklist = {};
+}
+if (!projectPackageJson.cssTracker.blacklist.cssPaths) {
+  projectPackageJson.cssTracker.blacklistcssPaths = [];
+}
+if (!projectPackageJson.cssTracker.blacklist.notUsedCss) {
+  projectPackageJson.cssTracker.blacklist.notUsedCss = [
+    "./node_modules",
+    ".public",
+    "./.cache",
+    "./build",
+  ];
+}
+if (!projectPackageJson.cssTracker.blacklist.moveCssPaths) {
+  projectPackageJson.cssTracker.blacklistmoveCssPaths = [
+    "./node_modules",
+    ".public",
+    "./.cache",
+    "./build",
+  ];
+}
+if (!projectPackageJson.cssTracker.blacklist.frontPaths) {
+  projectPackageJson.cssTracker.blacklist.frontPaths = [
+    "./node_modules",
+    ".public",
+    "./.cache",
+    "./build",
+  ];
+}
+if (!projectPackageJson.cssTracker.blacklist.cssClasses) {
+  projectPackageJson.cssTracker.blacklist.cssClasses = [];
+}
+if (!projectPackageJson.cssTracker.frontFiles) {
+  projectPackageJson.cssTracker.frontFiles = [".tsx", ".jsx", ".html"];
+}
+if (!projectPackageJson.cssTracker.cssFiles) {
+  projectPackageJson.cssTracker.cssFiles = [".css", ".scss"];
+}
+if (!projectPackageJson.cssTracker.outputLog) {
+  projectPackageJson.cssTracker.outputLog = "./logs.txt";
+}
+
 // Escreve o conteúdo atualizado do package.json de volta no disco
 fs.writeFileSync(
   projectPackageJsonPath,
