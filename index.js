@@ -36,7 +36,7 @@ async function start() {
     extractClassesFromFront
   );
   const logs = findClassReferences(cssJson, frontJson, config);
-  fs.writeFileSync(config.outputLog, JSON.stringify(logs));
+  fs.writeFileSync(config.outputLog, JSON.stringify(logs, null, 2));
 }
 
 start();
